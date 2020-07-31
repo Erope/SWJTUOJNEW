@@ -17,9 +17,14 @@ SQLALCHEMY_ENGINE_OPTIONS = {
     'pool_timeout': 5
 }
 
-YZM = 'DX'
+YZM = 'geetest'
 DX_config = {
     'AppID': "ID",
     'AppSecret': "KEY"
 }
+gee_config = {
+    'GEETEST_ID': "ID",
+    'GEETEST_KEY': "KEY"
+}
 CSRF_Token = True
+WTF_CSRF_TIME_LIMIT = 3600 * 6

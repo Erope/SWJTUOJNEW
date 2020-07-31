@@ -17,12 +17,26 @@ class Session(Resource):
         parser.add_argument('passwd', type=str, required=True, nullable=False)
         parser.add_argument('sid', type=int, required=True, nullable=False)
         parser.add_argument('token', type=str, required=False)
+        parser.add_argument(GeetestLib.GEETEST_CHALLENGE, type=str, required=False)
+        parser.add_argument(GeetestLib.GEETEST_VALIDATE, type=str, required=False)
+        parser.add_argument(GeetestLib.GEETEST_SECCODE, type=str, required=False)
         args = parser.parse_args()
-        if app_config.YZM:
+
+        if app_config.YZM == 'DX':
             # 验证验证码是否正确
             if 'token' not in args:
-                abort_msg(403, '验证码已启用，请通过验证码!')
+                abort_msg(403, '顶象验证码已启用，请通过验证码!')
             if not check_yzm_token(args['token']):
+                abort_msg(403, '验证码核验失败!')
+        elif app_config.YZM == 'geetest':
+            # 验证验证码是否正确
+            if GeetestLib.GEETEST_CHALLENGE not in args or GeetestLib.GEETEST_VALIDATE not in args or GeetestLib.GEETEST_SECCODE not in args:
+                abort_msg(403, 'GeeTest验证码已启用，请通过验证码!')
+            challenge = args[GeetestLib.GEETEST_CHALLENGE]
+            validate = args[GeetestLib.GEETEST_VALIDATE]
+            seccode = args[GeetestLib.GEETEST_SECCODE]
+            res = check_geetest(challenge, validate, seccode)
+            if not res:
                 abort_msg(403, '验证码核验失败!')
         # 验证码正确或未启用验证码，进入正常验证流程
         # 计算pwd的md5值
@@ -59,7 +73,6 @@ class Session(Resource):
         return ret_data()
 
     def get(self):
-        print(generate_csrf())
         if 'uid' in session:
             return ret_data({
                 'uid': session['uid'],

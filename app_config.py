@@ -17,7 +17,7 @@ SQLALCHEMY_ENGINE_OPTIONS = {
     'pool_timeout': 5
 }
 
-YZM = 'geetest'
+YZM = None
 DX_config = {
     'AppID': "ID",
     'AppSecret': "KEY"

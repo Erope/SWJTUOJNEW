@@ -69,7 +69,13 @@ class Session(Resource):
         })
 
     def delete(self):
-        session.clear()
+        # 将session全部pop出去
+        l = list()
+        for i in session:
+            if i != '_permanent' and i!= 'csrf_token':
+                l.append(i)
+        for i in l:
+            session.pop(i)
         return ret_data()
 
     def get(self):

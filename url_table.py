@@ -7,3 +7,6 @@ def init_url():
     import Config.app
     api.add_resource(Config.app.YZM, '/api/config/captcha')
     api.add_resource(Config.app.Token, '/api/config/csrf')
+
+    import User.app
+    api.add_resource(User.app.User, '/api/user', '/api/user/<int:uid>')

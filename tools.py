@@ -52,7 +52,6 @@ def check_geetest(challenge, validate, seccode):
         result = gt_lib.successValidate(challenge, validate, seccode, param_dict)
     else:
         result = gt_lib.failValidate(challenge, validate, seccode)
-    # 注意，不要更改返回的结构和值类型
     if result.status == 1:
         return True
     else:

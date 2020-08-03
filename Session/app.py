@@ -5,6 +5,7 @@ import app_config
 import time
 
 from tools import *
+from app import app
 
 
 class Session(Resource):
@@ -53,6 +54,8 @@ class Session(Resource):
         session['uid'] = user.uid
         session['sid'] = user.sid
         session['name'] = user.name
+        # 设置session为永久
+        session.permanent = True
         last_login_time = user.last_login_time
         # 更新上次登录时间
         user.last_login_time = str(int(time.time()))
@@ -70,12 +73,23 @@ class Session(Resource):
 
     def delete(self):
         # 将session全部pop出去
+        # 取消掉redis中uid->session映射
+        if 'uid' in session:
+            r = app_config.utos
+            sid = session.sid
+            # 重新为redis中uid映射赋值
+            try:
+                r.delete(str(session['uid']) + '_' + sid)
+            except BaseException as e:
+                app.logger.warning("用户%d的uid->session从redis删除时失败: %s" % (int(session['uid']), str(e)))
         l = list()
         for i in session:
-            if i != '_permanent' and i!= 'csrf_token':
+            if i != '_permanent' and i != 'csrf_token':
                 l.append(i)
         for i in l:
             session.pop(i)
+        # 同时取消session永久
+        session.permanent = False
         return ret_data()
 
     def get(self):

@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse, abort
 from flask import session, request
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from model import *
 import app_config
 import time
@@ -113,7 +113,7 @@ class Avatar(Resource):
         except:
             abort_msg(500, '图片解析失败!')
             return
-        filename = secure_filename(session['uid']+'_L.jpg')
+        filename = secure_filename(str(session['uid'])+'_L.png')
         try:
             im.save(os.path.join(app_config.Avatar_Folder, filename))
         except:
@@ -124,7 +124,7 @@ class Avatar(Resource):
         except:
             abort_msg(500, '图片解析失败!')
             return
-        filename = secure_filename(session['uid']+'_M.jpg')
+        filename = secure_filename(str(session['uid'])+'_M.png')
         try:
             im.save(os.path.join(app_config.Avatar_Folder, filename))
         except:
@@ -135,12 +135,12 @@ class Avatar(Resource):
         except:
             abort_msg(500, '图片解析失败!')
             return
-        filename = secure_filename(session['uid']+'_S.jpg')
+        filename = secure_filename(str(session['uid'])+'_S.png')
         try:
             im.save(os.path.join(app_config.Avatar_Folder, filename))
         except:
             abort_msg(500, '头像文件写入服务器失败!')
-        filename = secure_filename(session['uid']+'.jpg')
+        filename = secure_filename(str(session['uid'])+'.png')
         try:
             im.save(os.path.join(app_config.Avatar_Folder, filename))
         except:

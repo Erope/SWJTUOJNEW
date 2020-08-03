@@ -40,7 +40,7 @@ gee_config = {
 CSRF_Token = False
 WTF_CSRF_TIME_LIMIT = 3600 * 6
 
-Avatar_Folder = "/tmp/"
+Avatar_Folder = "/data/fandai/sites/oj.shinenet.cn/www/Avatar/"
 # 日志
 formatter = logging.Formatter(
         "[%(asctime)s][%(filename)s:%(lineno)d][%(levelname)s][%(thread)d] - %(message)s")

@@ -32,7 +32,6 @@ def call_after_request_callbacks(response):
         # 重新为redis中uid映射赋值
         try:
             r.set(str(session['uid']) + '_' + sid, sid, ex=app_config.PERMANENT_SESSION_LIFETIME)
-            print('OK!')
         except BaseException as e:
             app.logger.warning("用户%d的uid->session映射写入redis时失败: %s" % (int(session['uid']), str(e)))
     return response

@@ -16,10 +16,13 @@ PERMANENT_SESSION_LIFETIME = 31 * 24 * 60 * 60
 SESSION_TYPE = "redis"
 r = redis.Redis(host='localhost', port=6379, db=0)
 SESSION_REDIS = r
+# 反向解析用户登录session的redis
 utos = redis.Redis(host='localhost', port=6379, db=1, decode_responses=True)
 
 SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:password@localhost:3306/APIOJ"
-
+SQLALCHEMY_BINDS = {
+    'qu':        'mysql+pymysql://root:password@localhost:3306/Question'
+}
 
 SQLALCHEMY_ENGINE_OPTIONS = {
     'pool_recycle': 120,

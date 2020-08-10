@@ -16,3 +16,7 @@ def init_url():
     import Info.app
     api.add_resource(Info.app.AnnList, '/api/info/ann')
     api.add_resource(Info.app.Ann, '/api/info/ann/<int:aid>')
+
+    import Tag.app
+    api.add_resource(Tag.app.Tag, '/api/tag/<int:level>/<int:father>', '/api/tag/<int:level>')
+    api.add_resource(Tag.app.TagChooseQu, '/api/choose/tag/<int:tid>/<int:level>')

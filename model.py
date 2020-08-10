@@ -34,3 +34,12 @@ class ClassOrm(db.Model):
     tid = db.Column(db.Integer, nullable=True)
     join_pwd = db.Column(db.VARCHAR(100), nullable=True)
     f_cid = db.Column(db.Integer, db.ForeignKey('class.cid'), nullable=True)
+
+
+class AnnOrm(db.Model):
+    __tablename__ = 'announcement'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    title = db.Column(db.VARCHAR(512), nullable=False, default='无标题')
+    info = db.Column(db.Text, nullable=False)
+    time = db.Column(db.CHAR(10), nullable=False)

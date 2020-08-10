@@ -12,3 +12,7 @@ def init_url():
     api.add_resource(User.app.User, '/api/user', '/api/user/<int:uid>')
     api.add_resource(User.app.Avatar, '/api/avatar')
     api.add_resource(User.app.PWD, '/api/pwd')
+
+    import Info.app
+    api.add_resource(Info.app.AnnList, '/api/info/ann')
+    api.add_resource(Info.app.Ann, '/api/info/ann/<int:aid>')

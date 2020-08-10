@@ -48,3 +48,4 @@ handler = TimedRotatingFileHandler(
     "flask.log", when="D", interval=1, backupCount=15,
     encoding="UTF-8", delay=False, utc=True)
 handler.setFormatter(formatter)
+page_size = 15

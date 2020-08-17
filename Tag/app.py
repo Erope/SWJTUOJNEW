@@ -9,6 +9,10 @@ from app import app
 
 
 class Tag(Resource):
+    def __init__(self):
+        if 'uid' not in session:
+            abort_msg(401, '未登录或登录过期!')
+
     def get(self, level, father=None):
         if level >= 2 and father is None:
             abort_msg(403, '二级及以上标签应给出父标签!')
@@ -23,11 +27,16 @@ class Tag(Resource):
 
 
 class TagChooseQu(Resource):
+    def __init__(self):
+        if 'uid' not in session:
+            abort_msg(401, '未登录或登录过期!')
+
     def get(self, tid, level):
+        # 跳过查询是否有权限获取题目步骤
         # 进行随机抽取并排序
         # EXPLAIN下看起来速度还行，如果后期出现瓶颈再考虑修复
         # EXPLAIN: qu表未使用索引，order_by进行随机排序使用了临时表
-        #qu = QuOrm.query.filter(QuOrm.tags.any(TagOrm.tag_id == tid),
+        # qu = QuOrm.query.filter(QuOrm.tags.any(TagOrm.tag_id == tid),
         #                        QuOrm.qu_level == level).order_by(db.text('RAND()')).first()
         qu = db.session.query(QuOrm).join(tagmap).filter(QuOrm.qu_level == level,
                                                          TagOrm.tag_id == tid).order_by(db.text('RAND()')).first()

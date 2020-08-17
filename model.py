@@ -50,6 +50,16 @@ tagmap = db.Table('tagmap', db.metadata,
     db.Column('qu_id', db.Integer, db.ForeignKey('question.qu_id')),
 )
 
+class ExampleOrm(db.Model):
+    __tablename__ = 'io_example'
+    __bind_key__ = 'qu'
+
+    eg_id = db.Column(db.Integer, primary_key=True)
+    eg_in = db.Column(db.Text)
+    eg_out = db.Column(db.Text)
+    qu_id = db.Column(db.Integer, db.ForeignKey('question.qu_id'))
+
+    qu = db.relationship('QuOrm', back_populates="examples")
 
 class QuOrm(db.Model):
     __tablename__ = 'question'
@@ -75,7 +85,7 @@ class QuOrm(db.Model):
     qu_memory_lmt = db.Column(db.Integer)
 
     tags = db.relationship('TagOrm', secondary=tagmap, back_populates="qus")
-    #examples = db.relationship('ExampleOrm', backref=db.backref('qus'))
+    examples = db.relationship('ExampleOrm', backref=db.backref('qus'))
 
 
 class TagOrm(db.Model):

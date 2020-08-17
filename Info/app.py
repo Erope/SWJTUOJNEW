@@ -9,6 +9,10 @@ from app import app
 
 
 class AnnList(Resource):
+    def __init__(self):
+        if 'uid' not in session:
+            abort_msg(401, '未登录或登录过期!')
+
     def get(self):
         parser = reqparse.RequestParser()
         parser.add_argument('page_index', type=int, default=1)
@@ -44,6 +48,10 @@ class AnnList(Resource):
 
 
 class Ann(Resource):
+    def __init__(self):
+        if 'uid' not in session:
+            abort_msg(401, '未登录或登录过期!')
+
     def get(self, aid):
         try:
             ann = AnnOrm.query.get(aid)

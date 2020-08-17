@@ -52,3 +52,12 @@ handler = TimedRotatingFileHandler(
     encoding="UTF-8", delay=False, utc=True)
 handler.setFormatter(formatter)
 page_size = 15
+
+# 进入数据库时是按id进入并非是按字符串进入，所以顺序千万不可动，也不可以删除
+# 务必使用Python3.7及以上版本
+languageOptions = [
+    'C++',
+    'C',
+    'JAVA',
+    'Python3'
+]

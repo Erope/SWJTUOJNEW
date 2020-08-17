@@ -20,3 +20,6 @@ def init_url():
     import Tag.app
     api.add_resource(Tag.app.Tag, '/api/tag/<int:level>/<int:father>', '/api/tag/<int:level>')
     api.add_resource(Tag.app.TagChooseQu, '/api/choose/tag/<int:tid>/<int:level>')
+
+    import Question.app
+    api.add_resource(Question.app.Qu, '/api/qu/<int:qid>')

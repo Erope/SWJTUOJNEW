@@ -44,3 +44,34 @@ class Qu(Resource):
             'languageOptions': app_config.languageOptions
         }
         return ret_data(data)
+
+
+class Judge(Resource):
+    def __init__(self):
+        if 'uid' not in session:
+            abort_msg(401, '未登录或登录过期!')
+
+    def get(self, jid):
+        jd = JudgeOrm.query.get(jid)
+        if jd is None:
+            abort_msg(404, '判题不存在')
+        if jd.uid != session.get('uid'):
+            abort_msg(403, '您不拥有此判题记录!')
+        # 获取题目信息
+        qu = QuOrm.query.get(jd.qu_id)
+        if qu is None:
+            abort_msg(404, '题目不存在')
+        # 返回判题记录
+        data = {
+            'id': jd.id,
+            'qu_id': jd.qu_id,
+            'qu_title': qu.qu_title,
+            'coding': jd.coding,
+            'status': jd.status,
+            'error_msg': jd.error_msg,
+            'time': jd.time,
+            'lan': app_config.languageOptions[jd.lan],
+            'error_testid': jd.error_testid,
+            'error_out': jd.error_out
+        }
+        return ret_data(data)

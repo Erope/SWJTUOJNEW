@@ -23,3 +23,4 @@ def init_url():
 
     import Question.app
     api.add_resource(Question.app.Qu, '/api/qu/<int:qid>')
+    api.add_resource(Question.app.Judge, '/api/judge/<int:jid>')

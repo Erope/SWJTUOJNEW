@@ -112,3 +112,21 @@ class UserQuMapOrm(db.Model):
 
     user = db.relationship("UserOrm", backref="choosequs")
     qu = db.relationship("QuOrm")
+
+
+class JudgeOrm(db.Model):
+    __tablename__ = 'judge'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    qu_id = db.Column(db.Integer, nullable=False)
+    # coding后期要注意限制长度
+    coding = db.Column(db.Text, nullable=False)
+    status = db.Column(db.Integer, nullable=False, default=0)
+    error_msg = db.Column(db.VARCHAR(400))
+    uid = db.Column(db.Integer, db.ForeignKey('user.uid'), nullable=False)
+    time = db.Column(db.BIGINT, nullable=False)
+    lan = db.Column(db.Integer, nullable=False)
+    error_testid = db.Column(db.Integer, default=-1)
+    error_out = db.Column(db.Text)
+
+    user = db.relationship('UserOrm', backref="Judges")

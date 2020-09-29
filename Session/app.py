@@ -44,7 +44,8 @@ class Session(Resource):
         pwd = get_pwd(args['sid'], args['passwd'])
         try:
             user = UserOrm.query.filter_by(sid=args['sid'], password=pwd).first()
-        except:
+        except BaseException as e:
+            app.logger.warning("登录时数据库失败: %s" % str(e))
             abort_msg(500, '链接数据库失败!')
             return
         if user is None:

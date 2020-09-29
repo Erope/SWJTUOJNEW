@@ -48,7 +48,7 @@ Avatar_Folder = "/data/fandai/sites/oj.shinenet.cn/www/Avatar/"
 formatter = logging.Formatter(
         "[%(asctime)s][%(filename)s:%(lineno)d][%(levelname)s][%(thread)d] - %(message)s")
 handler = TimedRotatingFileHandler(
-    "flask.log", when="D", interval=1, backupCount=15,
+    "/tmp/flask.log", when="D", interval=1, backupCount=15,
     encoding="UTF-8", delay=False, utc=True)
 handler.setFormatter(formatter)
 page_size = 15

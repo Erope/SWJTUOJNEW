@@ -60,8 +60,8 @@ page_size = 15
 # 务必使用Python3.7及以上版本
 # 保持和判题端相同的配置
 languageOptions = [
-    'cpp',
-    'c',
-    'java',
-    'python'
+    {'value': 'cpp'},
+    {'value': 'c'},
+    {'value': 'java'},
+    {'value': 'python'}
 ]

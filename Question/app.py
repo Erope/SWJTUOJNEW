@@ -30,15 +30,15 @@ class Qu(Resource):
             'in': qu.qu_in_format,
             'out': qu.qu_out_format,
             'level': qu.qu_level,
-            'num': {
-                'Accept': qu.qu_ac_num,
-                'Wrong Answer': qu.qu_wa_num,
-                'Time Limit Exceeded': qu.qu_tle_num,
-                'Memory Limit Exceeded': qu.qu_mle_num,
-                'Presentation ERROR': qu.qu_pe_num,
-                'Runtime ERROR': qu.qu_re_num,
-                'Compile ERROR': qu.qu_ce_num,
-            },
+            'num': [
+                {'name': 'Accept', 'value': qu.qu_ac_num},
+                {'name': 'Wrong Answer', 'value': qu.qu_wa_num},
+                {'name': 'Time Limit Exceeded', 'value': qu.qu_tle_num},
+                {'name': 'Memory Limit Exceeded', 'value': qu.qu_mle_num},
+                {'name': 'Presentation ERROR', 'value': qu.qu_pe_num},
+                {'name': 'Runtime ERROR', 'value': qu.qu_re_num},
+                {'name': 'Compile ERROR', 'value': qu.qu_ce_num}
+            ],
             'tag': d_tag,
             'example': d_example,
             'languageOptions': app_config.languageOptions
@@ -72,7 +72,7 @@ class Judge(Resource):
                 'status': jd.status,
                 'error_msg': jd.error_msg,
                 'time': jd.time,
-                'lan': app_config.languageOptions[jd.lan],
+                'lan': app_config.languageOptions[jd.lan]['value'],
                 'error_testid': jd.error_testid,
                 'error_out': jd.error_out
             }
@@ -103,7 +103,7 @@ class Judge(Resource):
                     'qu_id': jd.qu_id,
                     'status': jd.status,
                     'time': jd.time,
-                    'lan': app_config.languageOptions[jd.lan],
+                    'lan': app_config.languageOptions[jd.lan]['value'],
                 }
                 r_data['Judge'].append(d)
             r_data['Qu'] = list()
@@ -115,15 +115,15 @@ class Judge(Resource):
                     'id': qu.qu_id,
                     'title': qu.qu_title,
                     'level': qu.qu_level,
-                    'num': {
-                        'ac_num': qu.qu_ac_num,
-                        'wa_num': qu.qu_wa_num,
-                        'tle_num': qu.qu_tle_num,
-                        'mle_num': qu.qu_mle_num,
-                        'pe_num': qu.qu_pe_num,
-                        're_num': qu.qu_re_num,
-                        'ce_num': qu.qu_ce_num,
-                    },
+                    'num': [
+                        {'name': 'Accept', 'value': qu.qu_ac_num},
+                        {'name': 'Wrong Answer', 'value': qu.qu_wa_num},
+                        {'name': 'Time Limit Exceeded', 'value': qu.qu_tle_num},
+                        {'name': 'Memory Limit Exceeded', 'value': qu.qu_mle_num},
+                        {'name': 'Presentation ERROR', 'value': qu.qu_pe_num},
+                        {'name': 'Runtime ERROR', 'value': qu.qu_re_num},
+                        {'name': 'Compile ERROR', 'value': qu.qu_ce_num}
+                    ],
                     'tag': d_tag
                 }
                 r_data['Qu'].append(d)

@@ -23,4 +23,7 @@ def init_url():
 
     import Question.app
     api.add_resource(Question.app.Qu, '/api/qu/<int:qid>')
-    api.add_resource(Question.app.Judge, '/api/judge/<int:jid>')
+    api.add_resource(Question.app.Judge, '/api/judge/<int:jid>', '/api/judge')
+
+    import Question.AutoSave
+    api.add_resource(Question.AutoSave.AutoSave, '/api/save/<int:qid>')

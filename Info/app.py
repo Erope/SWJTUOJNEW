@@ -18,6 +18,7 @@ class AnnList(Resource):
         parser.add_argument('page_index', type=int, default=1)
         args = parser.parse_args()
         page_index = args['page_index']
+        # 公告分页，分页长度在config中
         try:
             Anns = db.session.query(AnnOrm).filter().slice((page_index - 1) * app_config.page_size,
                                                        page_index * app_config.page_size)

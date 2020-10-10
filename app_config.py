@@ -18,6 +18,9 @@ r = redis.Redis(host='localhost', port=6379, db=0)
 SESSION_REDIS = r
 # 反向解析用户登录session的redis
 utos = redis.Redis(host='localhost', port=6379, db=1, decode_responses=True)
+# 保存代码的redis
+save_time = 2 * 24 * 60 * 60
+save_redis = redis.Redis(host='localhost', port=6379, db=2, decode_responses=True)
 
 SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:password@localhost:3306/APIOJ"
 SQLALCHEMY_BINDS = {
@@ -55,9 +58,10 @@ page_size = 15
 
 # 进入数据库时是按id进入并非是按字符串进入，所以顺序千万不可动，也不可以删除
 # 务必使用Python3.7及以上版本
+# 保持和判题端相同的配置
 languageOptions = [
-    'C++',
-    'C',
-    'JAVA',
-    'Python3'
+    'cpp',
+    'c',
+    'java',
+    'python'
 ]

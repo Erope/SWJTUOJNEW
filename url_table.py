@@ -27,3 +27,6 @@ def init_url():
 
     import Question.AutoSave
     api.add_resource(Question.AutoSave.AutoSave, '/api/save/<int:qid>')
+
+    import Class.app
+    api.add_resource(Class.app.ClassInfo, '/api/class', '/api/class/register')

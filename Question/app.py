@@ -138,3 +138,41 @@ class Judge(Resource):
                 'total': count,
                 'list': r_data
             })
+
+
+class Commit(Resource):
+    def __init__(self):
+        if 'uid' not in session:
+            abort_msg(401, '未登录或登录过期!')
+
+    def get(self, qid):
+        # 跳过查询是否有权限获取题目步骤
+        qu = QuOrm.query.get(qid)
+        if qu is None:
+            abort_msg(404, '题目不存在!')
+        d_tag = list()
+        for tag in qu.tags:
+            d_tag.append({'id': tag.tag_id, 'name': tag.tag_text})
+        d_example = list()
+        for example in qu.examples:
+            d_example.append({'in': example.eg_in, 'out': example.eg_out})
+        data = {
+            'title': qu.qu_title,
+            'content': qu.qu_content,
+            'in': qu.qu_in_format,
+            'out': qu.qu_out_format,
+            'level': qu.qu_level,
+            'num': [
+                {'name': 'Accept', 'value': qu.qu_ac_num},
+                {'name': 'Wrong Answer', 'value': qu.qu_wa_num},
+                {'name': 'Time Limit Exceeded', 'value': qu.qu_tle_num},
+                {'name': 'Memory Limit Exceeded', 'value': qu.qu_mle_num},
+                {'name': 'Presentation ERROR', 'value': qu.qu_pe_num},
+                {'name': 'Runtime ERROR', 'value': qu.qu_re_num},
+                {'name': 'Compile ERROR', 'value': qu.qu_ce_num}
+            ],
+            'tag': d_tag,
+            'example': d_example,
+            'languageOptions': app_config.languageOptions
+        }
+        return ret_data(data)

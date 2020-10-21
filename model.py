@@ -14,6 +14,7 @@ class UserOrm(db.Model):
     pass_num = db.Column(db.Integer, default=0, nullable=False)
     rank = db.Column(db.Integer, default=-1, nullable=False)
     score = db.Column(db.Integer, default=0, nullable=False)
+    Qscore = db.Column(db.Integer, default=0, nullable=False)
     blog_url = db.Column(db.VARCHAR(40), default="",  nullable=True)
     signature = db.Column(db.VARCHAR(255), default="", nullable=True)
     class_id = db.Column(db.Integer, db.ForeignKey('class.cid'))
@@ -21,9 +22,6 @@ class UserOrm(db.Model):
     phone = db.Column(db.CHAR(11))
 
     u_class = db.relationship('ClassOrm', backref=db.backref('students'))
-
-    def __repr__(self):
-        return '%s-->%s' % (self.name, self.studentid)
 
 
 class ClassOrm(db.Model):
@@ -130,3 +128,4 @@ class JudgeOrm(db.Model):
     error_out = db.Column(db.Text)
 
     user = db.relationship('UserOrm', backref="Judges")
+

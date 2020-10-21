@@ -1,7 +1,5 @@
-from flask_restful import Resource, reqparse, abort
-from flask import session
+from flask_restful import Resource, reqparse
 from model import *
-import app_config
 import time
 
 from tools import *
@@ -36,7 +34,12 @@ class Session(Resource):
             challenge = args[GeetestLib.GEETEST_CHALLENGE]
             validate = args[GeetestLib.GEETEST_VALIDATE]
             seccode = args[GeetestLib.GEETEST_SECCODE]
-            res = check_geetest(challenge, validate, seccode)
+            try:
+                res = check_geetest(challenge, validate, seccode)
+            except BaseException as e:
+                abort_msg(500, '验证码连接失败!')
+                app.logger.warning("验证码连接失败: %s" % str(e))
+                return
             if not res:
                 abort_msg(403, '验证码核验失败!')
         # 验证码正确或未启用验证码，进入正常验证流程
@@ -62,7 +65,8 @@ class Session(Resource):
         user.last_login_time = str(int(time.time()))
         try:
             db.session.commit()
-        except:
+        except BaseException as e:
+            app.logger.warning("更新上次登录时间错误: %s" % str(e))
             # 只是更新上次登录时间出错而已，问题不大
             db.session.rollback()
         return ret_data({

@@ -18,7 +18,12 @@ class AutoSave(Resource):
         # 从redis中取出
         r = app_config.save_redis
         uid = session.get('uid')
-        data = r.get(f'{uid}_{qid}')
+        try:
+            data = r.get(f'{uid}_{qid}')
+        except BaseException as e:
+            abort_msg(500, '缓存连接失败!')
+            app.logger.warning("Redis连接失败: %s" % str(e))
+            return
         if data is None:
             abort_msg(404, '未保存或保存超时')
         return ret_data(data)
@@ -39,5 +44,10 @@ class AutoSave(Resource):
         if len(coding_decrypt) > 20480:
             abort_msg(400, '欲保存的代码过长')
         r = app_config.save_redis
-        r.setex(f'{uid}_{qid}', app_config.save_time, coding_decrypt)
+        try:
+            r.setex(f'{uid}_{qid}', app_config.save_time, coding_decrypt)
+        except BaseException as e:
+            abort_msg(500, '缓存连接失败!')
+            app.logger.warning("Redis连接失败: %s" % str(e))
+            return
         return ret_data(None, 204)

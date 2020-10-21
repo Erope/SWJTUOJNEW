@@ -1,11 +1,6 @@
-from flask_restful import Resource, reqparse, abort
-from flask import session
+from flask_restful import Resource
 from model import *
-import app_config
-import time
-
 from tools import *
-from app import app
 
 
 class Tag(Resource):
@@ -16,9 +11,9 @@ class Tag(Resource):
     def get(self, level, father=None):
         if level >= 2 and father is None:
             abort_msg(403, '二级及以上标签应给出父标签!')
-        Tags = db.session.query(TagOrm).filter(TagOrm.tag_level == level, TagOrm.tag_father == father).all()
+        tags = db.session.query(TagOrm).filter(TagOrm.tag_level == level, TagOrm.tag_father == father).all()
         l = list()
-        for tag in Tags:
+        for tag in tags:
             l.append({
                 'tid': tag.tag_id,
                 'name': tag.tag_text

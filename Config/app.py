@@ -1,7 +1,5 @@
-from flask_restful import Resource, reqparse, abort
-from flask import session
-import app_config
-from flask_wtf.csrf import CSRFProtect, generate_csrf
+from flask_restful import Resource
+from flask_wtf.csrf import generate_csrf
 from tools import *
 import json
 

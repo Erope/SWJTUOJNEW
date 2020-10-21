@@ -1,5 +1,5 @@
 from flask import Flask, session
-from flask_restful import Resource, Api
+from flask_restful import Api
 from flask_session import Session
 import app_config
 from werkzeug.middleware.proxy_fix import ProxyFix

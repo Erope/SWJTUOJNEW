@@ -1,13 +1,10 @@
-from flask_restful import Resource, reqparse, abort
-from flask import session, request
+from flask_restful import Resource, reqparse
+from flask import request
 from werkzeug.utils import secure_filename
 from model import *
-import app_config
-import time
 from PIL import Image
 import os
 from app import app
-
 from tools import *
 
 
@@ -21,8 +18,9 @@ class User(Resource):
         # 查询uid对应的用户信息
         try:
             user = UserOrm.query.get(uid)
-        except:
+        except BaseException as e:
             abort_msg(500, '数据库连接失败!')
+            app.logger.warning("数据库连接失败: %s" % str(e))
             return
         if not user:
             abort_msg(404, '该用户不存在!')
@@ -49,25 +47,25 @@ class User(Resource):
                 else:
                     r_data['class_name'] = "暂未加入班级"
                 return ret_data(r_data)
-        # 输出不完整信息
-        r_data = {
-            'uid': user.uid,
-            'name': user.name,
-            'reg_time': int(user.reg_time),
-            'try_num': int(user.try_num),
-            'pass_num': int(user.pass_num),
-            'rank': user.rank,
-            'score': user.score,
-            'Qscore': user.Qscore,
-            'blog_url': user.blog_url,
-            'signature': user.signature,
-            'class_name': user.u_class.name,
-        }
-        if user.u_class:
-            r_data['class_name'] = user.u_class.name
         else:
-            r_data['class_name'] = "暂未加入班级"
-        return ret_data(r_data)
+            r_data = {
+                'uid': user.uid,
+                'name': user.name,
+                'reg_time': int(user.reg_time),
+                'try_num': int(user.try_num),
+                'pass_num': int(user.pass_num),
+                'rank': user.rank,
+                'score': user.score,
+                'Qscore': user.Qscore,
+                'blog_url': user.blog_url,
+                'signature': user.signature,
+                'class_name': user.u_class.name,
+            }
+            if user.u_class:
+                r_data['class_name'] = user.u_class.name
+            else:
+                r_data['class_name'] = "暂未加入班级"
+            return ret_data(r_data)
 
     def put(self):
         if 'uid' not in session:
@@ -82,8 +80,9 @@ class User(Resource):
             abort_msg(403, '昵称不可为空!')
         try:
             user = UserOrm.query.get(session['uid'])
-        except:
+        except BaseException as e:
             abort_msg(500, '数据库连接失败!')
+            app.logger.warning("数据库连接失败: %s" % str(e))
             return
         user.name = args.get('name')
         user.blog_url = args.get('blog_url')
@@ -91,10 +90,29 @@ class User(Resource):
         user.phone = args.get('phone')
         try:
             db.session.commit()
-        except:
+        except BaseException as e:
             db.session.rollback()
-            abort_msg(500, '数据库连接错误!')
+            abort_msg(500, '更新个人资料失败!')
+            app.logger.warning("数据库更新个人资料失败: %s" % str(e))
+            return
         return self.get()
+
+
+def SaveSizePic(name, file, size=None):
+    try:
+        im = Image.open(file)
+        if size is not None:
+            im.thumbnail(size)
+    except BaseException as e:
+        app.logger.warning("图片解析失败: %s" % str(e))
+        abort_msg(500, '图片解析失败!')
+        return
+    filename = secure_filename(name)
+    try:
+        im.save(os.path.join(app_config.Avatar_Folder, filename))
+    except BaseException as e:
+        app.logger.warning("文件写入服务器失败: %s" % str(e))
+        abort_msg(500, '头像文件写入服务器失败!')
 
 
 class Avatar(Resource):
@@ -108,45 +126,10 @@ class Avatar(Resource):
         if file is None:
             abort_msg(400, '您必须上传图片!')
             return
-        size = (512, 512)
-        try:
-            im = Image.open(file)
-            im.thumbnail(size)
-        except:
-            abort_msg(500, '图片解析失败!')
-            return
-        filename = secure_filename(str(session['uid'])+'_L.png')
-        try:
-            im.save(os.path.join(app_config.Avatar_Folder, filename))
-        except:
-            abort_msg(500, '头像文件写入服务器失败!')
-        size = (256, 256)
-        try:
-            im.thumbnail(size)
-        except:
-            abort_msg(500, '图片解析失败!')
-            return
-        filename = secure_filename(str(session['uid'])+'_M.png')
-        try:
-            im.save(os.path.join(app_config.Avatar_Folder, filename))
-        except:
-            abort_msg(500, '头像文件写入服务器失败!')
-        size = (128, 128)
-        try:
-            im.thumbnail(size)
-        except:
-            abort_msg(500, '图片解析失败!')
-            return
-        filename = secure_filename(str(session['uid'])+'_S.png')
-        try:
-            im.save(os.path.join(app_config.Avatar_Folder, filename))
-        except:
-            abort_msg(500, '头像文件写入服务器失败!')
-        filename = secure_filename(str(session['uid'])+'.png')
-        try:
-            im.save(os.path.join(app_config.Avatar_Folder, filename))
-        except:
-            abort_msg(500, '头像文件写入服务器失败!')
+        SaveSizePic(str(session['uid'])+'_L.png', file, (512, 512))
+        SaveSizePic(str(session['uid']) + '_M.png', file, (256, 256))
+        SaveSizePic(str(session['uid']) + '_S.png', file, (128, 128))
+        SaveSizePic(str(session['uid']) + '.png', file)
         return ret_data(status=204)
 
 
@@ -163,10 +146,12 @@ class PWD(Resource):
         args = parser.parse_args()
         try:
             user = UserOrm.query.get(session['uid'])
-        except:
+        except BaseException as e:
+            app.logger.warning("数据库连接失败: %s" % str(e))
             abort_msg(500, '数据库连接失败!')
             return
         if user is None:
+            app.logger.warning("用户不存在: %d" % session.get('uid'))
             abort_msg(500, '数据库连接失败!')
             return
         if user.password != get_pwd(user.sid, args['o_pwd']):

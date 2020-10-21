@@ -1,9 +1,5 @@
-from flask_restful import Resource, reqparse, abort
-from flask import session
+from flask_restful import Resource, reqparse
 from model import *
-import app_config
-import time
-
 from tools import *
 from app import app
 
@@ -15,7 +11,12 @@ class Qu(Resource):
 
     def get(self, qid):
         # 跳过查询是否有权限获取题目步骤
-        qu = QuOrm.query.get(qid)
+        try:
+            qu = QuOrm.query.get(qid)
+        except BaseException as e:
+            app.logger.warning("数据库连接失败: %s" % str(e))
+            abort_msg(500, '数据库连接失败!')
+            return
         if qu is None:
             abort_msg(404, '题目不存在!')
         d_tag = list()
@@ -60,7 +61,12 @@ class Judge(Resource):
             if jd.uid != session.get('uid'):
                 abort_msg(403, '您不拥有此判题记录!')
             # 获取题目信息
-            qu = QuOrm.query.get(jd.qu_id)
+            try:
+                qu = QuOrm.query.get(jd.qu_id)
+            except BaseException as e:
+                app.logger.warning("数据库连接失败: %s" % str(e))
+                abort_msg(500, '数据库连接错误!')
+                return
             if qu is None:
                 abort_msg(404, '题目不存在')
             # 返回判题记录
@@ -85,8 +91,8 @@ class Judge(Resource):
             page_index = args['page_index']
             # 公告分页，分页长度在config中
             try:
-                Judges = db.session.query(JudgeOrm).filter(JudgeOrm.uid == session['uid']).slice((page_index - 1) * app_config.page_size,
-                                                               page_index * app_config.page_size)
+                Judges = db.session.query(JudgeOrm).filter(JudgeOrm.uid == session['uid']).\
+                    slice((page_index - 1) * app_config.page_size, page_index * app_config.page_size)
             except BaseException as e:
                 app.logger.warning("查询判题记录%d->%d时失败: %s" % ((page_index - 1) * app_config.page_size,
                                                           page_index * app_config.page_size, str(e)))
@@ -94,7 +100,12 @@ class Judge(Resource):
                 return
             # 查询题目
             Qu_ids = [i.qu_id for i in Judges]
-            Qus = db.session.query(QuOrm).filter(QuOrm.qu_id.in_(Qu_ids))
+            try:
+                Qus = db.session.query(QuOrm).filter(QuOrm.qu_id.in_(Qu_ids))
+            except BaseException as e:
+                app.logger.warning("查询题目时失败: %s" % str(e))
+                abort_msg(500, '数据库错误!')
+                return
             r_data = dict()
             r_data['Judge'] = list()
             for jd in Judges:
@@ -139,40 +150,3 @@ class Judge(Resource):
                 'list': r_data
             })
 
-
-class Commit(Resource):
-    def __init__(self):
-        if 'uid' not in session:
-            abort_msg(401, '未登录或登录过期!')
-
-    def get(self, qid):
-        # 跳过查询是否有权限获取题目步骤
-        qu = QuOrm.query.get(qid)
-        if qu is None:
-            abort_msg(404, '题目不存在!')
-        d_tag = list()
-        for tag in qu.tags:
-            d_tag.append({'id': tag.tag_id, 'name': tag.tag_text})
-        d_example = list()
-        for example in qu.examples:
-            d_example.append({'in': example.eg_in, 'out': example.eg_out})
-        data = {
-            'title': qu.qu_title,
-            'content': qu.qu_content,
-            'in': qu.qu_in_format,
-            'out': qu.qu_out_format,
-            'level': qu.qu_level,
-            'num': [
-                {'name': 'Accept', 'value': qu.qu_ac_num},
-                {'name': 'Wrong Answer', 'value': qu.qu_wa_num},
-                {'name': 'Time Limit Exceeded', 'value': qu.qu_tle_num},
-                {'name': 'Memory Limit Exceeded', 'value': qu.qu_mle_num},
-                {'name': 'Presentation ERROR', 'value': qu.qu_pe_num},
-                {'name': 'Runtime ERROR', 'value': qu.qu_re_num},
-                {'name': 'Compile ERROR', 'value': qu.qu_ce_num}
-            ],
-            'tag': d_tag,
-            'example': d_example,
-            'languageOptions': app_config.languageOptions
-        }
-        return ret_data(data)
